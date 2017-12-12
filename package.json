@@ -1,0 +1,22 @@
+{
+  "name": "products-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pramoch/products-backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pramoch/products-backend/issues"
+  },
+  "homepage": "https://github.com/pramoch/products-backend#readme",
+  "dependencies": {
+    "mongodb": "^3.0.0-rc0"
+  }
+}
