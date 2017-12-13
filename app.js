@@ -10,21 +10,21 @@ const dbName = 'mystore';
 let db;
 
 // Use connect method to connect to the server
-MongoClient.connect(url, function(err, client) {
+MongoClient.connect(url, function (err, client) {
   assert.equal(null, err);
-  console.log("Connected successfully to server");
+  console.log('Connected successfully to server');
 
   db = client.db(dbName);
 
   // client.close();
 });
 
-function addProduct(product) {
+function addProduct (product) {
   const collection = db.collection('products');
   collection.insertOne(product);
 };
 
-function getProducts(cb) {
+function getProducts (cb) {
   const collection = db.collection('products');
   collection.find({}).toArray((err, docs) => {
     cb(docs);
@@ -38,6 +38,7 @@ const app = express();
 app.get('/', (req, res) => res.send('Hello World!'));
 
 app.get('/addProduct', (req, res) => {
+  let product = {};
   // let product = {
   //   name: 'Apple iPhone X 256 GB',
   //   category: 'Mobile Phone',
@@ -52,7 +53,7 @@ app.get('/addProduct', (req, res) => {
   //   os: 'Android',
   //   price: '719'
   // };
-  // addProduct(product);
+  addProduct(product);
 });
 
 app.get('/getProducts', (req, res) => {
