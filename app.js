@@ -24,11 +24,20 @@ function addProduct (product) {
   return collection.insertOne(product);
 };
 
-function getProducts (cb) {
+function getProducts (query, cb) {
+  const newQuery = transform(query);
   const collection = db.collection('products');
-  collection.find({}).toArray((err, docs) => {
+  collection.find(newQuery).toArray((err, docs) => {
     cb(docs);
   });
+}
+
+function transform (query) {
+  if (query.brand) {
+    query.brand = { $in: query.brand }
+  }
+
+  return query;
 }
 
 // ========== express ==========
@@ -51,9 +60,8 @@ app.post('/addProduct', (req, res) => {
   });
 });
 
-app.get('/getProducts', (req, res) => {
-  getProducts((products) => {
-    console.log(products);
+app.post('/getProducts', (req, res) => {
+  getProducts(req.body, (products) => {
     res.json(products);
   });
 })
