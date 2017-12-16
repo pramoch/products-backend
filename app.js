@@ -21,7 +21,7 @@ MongoClient.connect(url, function (err, client) {
 
 function addProduct (product) {
   const collection = db.collection('products');
-  collection.insertOne(product);
+  return collection.insertOne(product);
 };
 
 function getProducts (cb) {
@@ -33,27 +33,22 @@ function getProducts (cb) {
 
 // ========== express ==========
 const express = require('express');
+const cors = require('cors');
 const app = express();
+const bodyParser = require('body-parser')
+
+app.use(cors());
+app.use(bodyParser.json());
 
 app.get('/', (req, res) => res.send('Hello World!'));
 
-app.get('/addProduct', (req, res) => {
-  let product = {};
-  // let product = {
-  //   name: 'Apple iPhone X 256 GB',
-  //   category: 'Mobile Phone',
-  //   brand: 'Apple',
-  //   os: 'iOS',
-  //   price: '1149'
-  // };
-  // let product = {
-  //   name: 'Samsung Galaxy S8 64 GB',
-  //   category: 'Mobile Phone',
-  //   brand: 'Samsung',
-  //   os: 'Android',
-  //   price: '719'
-  // };
-  addProduct(product);
+app.post('/addProduct', (req, res) => {
+  let product = req.body;
+
+  addProduct(product)
+  .then(result => {
+    res.json(product);
+  });
 });
 
 app.get('/getProducts', (req, res) => {
