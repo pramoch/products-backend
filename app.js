@@ -1,6 +1,5 @@
 // ========== database ==========
 const MongoClient = require('mongodb').MongoClient;
-const assert = require('assert');
 
 // Connection URL
 const url = 'mongodb://localhost:27017';
@@ -11,11 +10,9 @@ let db;
 
 // Use connect method to connect to the server
 MongoClient.connect(url, function (err, client) {
-  assert.equal(null, err);
   console.log('Connected successfully to server');
 
   db = client.db(dbName);
-
   // client.close();
 });
 
@@ -30,6 +27,20 @@ function getProducts (query, cb) {
   collection.find(newQuery).toArray((err, docs) => {
     cb(docs);
   });
+}
+
+function getProduct (query, cb) {
+  if (query._id) {
+    const collection = db.collection('products');
+    const ObjectID = require('mongodb').ObjectID;
+    collection.findOne({'_id' : ObjectID(query._id) })
+      .then(product => {
+        cb(product);
+      });
+  }
+  else {
+    cb({});
+  }
 }
 
 function transform (query) {
@@ -71,6 +82,12 @@ app.post('/addProduct', (req, res) => {
 app.post('/getProducts', (req, res) => {
   getProducts(req.body, (products) => {
     res.json(products);
+  });
+})
+
+app.post('/getProduct', (req, res) => {
+  getProduct(req.body, (product) => {
+    res.json(product);
   });
 })
 
