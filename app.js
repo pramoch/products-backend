@@ -33,8 +33,16 @@ function getProducts (query, cb) {
 }
 
 function transform (query) {
+  if (query.name) {
+    query.name = new RegExp('.*' + query.name + '.*', 'i');
+  }
+
   if (query.brand) {
     query.brand = { $in: query.brand }
+  }
+
+  if (query.os) {
+    query.os = { $in: query.os }
   }
 
   return query;
