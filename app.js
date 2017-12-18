@@ -49,7 +49,7 @@ function getProduct (query) {
   if (query._id) {
     const collection = db.collection('products');
     const ObjectID = require('mongodb').ObjectID;
-    return collection.findOne({'_id' : ObjectID(query._id) });
+    return collection.findOne({ '_id' : ObjectID(query._id) });
   }
   else {
     return Promise.resolve({});
@@ -60,12 +60,30 @@ function deleteProduct (query) {
   if (query._id) {
     const collection = db.collection('products');
     const ObjectID = require('mongodb').ObjectID;
-    return collection.deleteOne({'_id' : ObjectID(query._id) });
+    return collection.deleteOne({ '_id' : ObjectID(query._id) });
   }
   else {
     return Promise.resolve({});
   }
 }
+
+function updateProduct (product) {
+  if (product._id) {
+    const collection = db.collection('products');
+    const ObjectID = require('mongodb').ObjectID;
+    const id = product._id;
+    delete product._id;
+    return collection.replaceOne(
+      { '_id' : ObjectID(id) },
+      product
+    );
+  }
+  else {
+    return Promise.resolve({});
+  }
+}
+
+
 // ========== express ==========
 const express = require('express');
 const cors = require('cors');
@@ -101,6 +119,13 @@ app.post('/getProduct', (req, res) => {
 
 app.post('/deleteProduct', (req, res) => {
   deleteProduct(req.body)
+    .then(result => {
+      res.json({});
+    });
+});
+
+app.post('/updateProduct', (req, res) => {
+  updateProduct(req.body)
     .then(result => {
       res.json({});
     });
