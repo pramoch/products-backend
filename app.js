@@ -16,33 +16,6 @@ MongoClient.connect(url, function (err, client) {
   // client.close();
 });
 
-function addProduct (product) {
-  const collection = db.collection('products');
-  return collection.insertOne(product);
-};
-
-function getProducts (query, cb) {
-  const newQuery = transform(query);
-  const collection = db.collection('products');
-  collection.find(newQuery).toArray((err, docs) => {
-    cb(docs);
-  });
-}
-
-function getProduct (query, cb) {
-  if (query._id) {
-    const collection = db.collection('products');
-    const ObjectID = require('mongodb').ObjectID;
-    collection.findOne({'_id' : ObjectID(query._id) })
-      .then(product => {
-        cb(product);
-      });
-  }
-  else {
-    cb({});
-  }
-}
-
 function transform (query) {
   if (query.name) {
     query.name = new RegExp('.*' + query.name + '.*', 'i');
@@ -59,11 +32,45 @@ function transform (query) {
   return query;
 }
 
+function addProduct (product) {
+  const collection = db.collection('products');
+  return collection.insertOne(product);
+};
+
+function getProducts (query, cb) {
+  const newQuery = transform(query);
+  const collection = db.collection('products');
+  collection.find(newQuery).toArray((err, docs) => {
+    cb(docs);
+  });
+}
+
+function getProduct (query) {
+  if (query._id) {
+    const collection = db.collection('products');
+    const ObjectID = require('mongodb').ObjectID;
+    return collection.findOne({'_id' : ObjectID(query._id) });
+  }
+  else {
+    return Promise.resolve({});
+  }
+}
+
+function deleteProduct (query) {
+  if (query._id) {
+    const collection = db.collection('products');
+    const ObjectID = require('mongodb').ObjectID;
+    return collection.deleteOne({'_id' : ObjectID(query._id) });
+  }
+  else {
+    return Promise.resolve({});
+  }
+}
 // ========== express ==========
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -74,21 +81,29 @@ app.post('/addProduct', (req, res) => {
   let product = req.body;
 
   addProduct(product)
-  .then(result => {
-    res.json(product);
-  });
+    .then(result => {
+      res.json({});
+    });
 });
 
 app.post('/getProducts', (req, res) => {
   getProducts(req.body, (products) => {
     res.json(products);
   });
-})
+});
 
 app.post('/getProduct', (req, res) => {
-  getProduct(req.body, (product) => {
-    res.json(product);
-  });
-})
+  getProduct(req.body)
+    .then(product => {
+      res.json(product);
+    });
+});
+
+app.post('/deleteProduct', (req, res) => {
+  deleteProduct(req.body)
+    .then(result => {
+      res.json({});
+    });
+});
 
 app.listen(3000, () => console.log('Service is listening on port 3000!'))
