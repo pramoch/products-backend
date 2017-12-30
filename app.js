@@ -37,11 +37,18 @@ function addProduct (product) {
   return collection.insertOne(product);
 };
 
+function getAllProducts (cb) {
+  const collection = db.collection('products');
+  collection.find({}).toArray((err, products) => {
+    cb(products);
+  });
+}
+
 function getProducts (query, cb) {
   const newQuery = transform(query);
   const collection = db.collection('products');
-  collection.find(newQuery).toArray((err, docs) => {
-    cb(docs);
+  collection.find(newQuery).toArray((err, products) => {
+    cb(products);
   });
 }
 
@@ -102,6 +109,12 @@ app.post('/addProduct', (req, res) => {
     .then(result => {
       res.json({});
     });
+});
+
+app.get('/getAllProducts', (req, res) => {
+  getAllProducts(results => {
+    res.json(results);
+  })
 });
 
 app.post('/getProducts', (req, res) => {
