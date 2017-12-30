@@ -39,9 +39,15 @@ function addProduct (product) {
 
 function getAllProducts (cb) {
   const collection = db.collection('products');
-  collection.find({}).toArray((err, products) => {
-    cb(products);
-  });
+  collection.distinct('brand')
+    .then(brands => {
+      collection.find({}).toArray((err, products) => {
+        cb({
+          products: products,
+          brands: brands
+        });
+      });
+    });
 }
 
 function getProducts (query, cb) {
