@@ -49,7 +49,7 @@ function getAllProducts (cb) {
       cb({
         products: products,
         brands: values[0],
-        os: values[1]
+        oss: values[1]
       });
     });
   });
