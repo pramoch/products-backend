@@ -39,15 +39,20 @@ function addProduct (product) {
 
 function getAllProducts (cb) {
   const collection = db.collection('products');
-  collection.distinct('brand')
-    .then(brands => {
-      collection.find({}).toArray((err, products) => {
-        cb({
-          products: products,
-          brands: brands
-        });
+
+  Promise.all([
+    collection.distinct('brand'),
+    collection.distinct('os'),
+  ])
+  .then(values => {
+    collection.find({}).toArray((err, products) => {
+      cb({
+        products: products,
+        brands: values[0],
+        os: values[1]
       });
     });
+  });
 }
 
 function getProducts (query, cb) {
